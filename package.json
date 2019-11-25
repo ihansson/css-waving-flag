@@ -1,7 +1,7 @@
 {
   "name": "waving-flag",
   "version": "0.0.1",
-  "description": "A simple library for toggling classes and animations when in view.",
+  "description": "A demo for creating a waving flag using css rendering.",
   "main": "src/waving-flag.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +11,7 @@
     "url": "git+https://github.com/ihansson/waving-flag.git"
   },
   "keywords": [
+    "typescript",
     "javascript",
     "animation"
   ],
