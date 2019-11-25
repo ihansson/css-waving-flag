@@ -89,10 +89,17 @@ window["waving-flag"] =
 /* 0 */
 /***/ (function(module, exports) {
 
+function load(node) {
+    console.log(node);
+}
+function init() {
+    document.querySelectorAll('[flag]').forEach(function (node) {
+        load(node);
+    });
+}
+init();
+module.exports = {};
 
-module.exports = {
-	
-};
 
 /***/ })
 /******/ ]);

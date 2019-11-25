@@ -37,8 +37,8 @@ class Without {
 
 module.exports = {
   entry: {
-    "waving-flag": "./src/waving-flag.js",
-    "waving-flag.min": "./src/waving-flag.js",
+    "waving-flag": "./src/waving-flag.ts",
+    "waving-flag.min": "./src/waving-flag.ts",
     "waving-flag-styles": "./src/waving-flag-styles.scss",
   },
   devtool: 'source-map',
@@ -70,7 +70,15 @@ module.exports = {
           'sass-loader',
         ],
       },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ]
+  },
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.js' ],
   },
   plugins: [
     new FixStyleOnlyEntriesPlugin(),
