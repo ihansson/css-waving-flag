@@ -127,7 +127,7 @@ function load(node) {
     node.appendChild(segments);
     node.segments = cache_segments(node);
     node.ripple_map = new Array(settings.segments).fill(0);
-    node.ripples = [{ position: 0, width: 3, start_life: 1000, life: 1000 }];
+    node.ripples = [{ position: 0, width: 12, start_life: 500, life: 500 }];
 }
 function create_segments(settings) {
     // Create wrapping el
@@ -151,7 +151,7 @@ function cache_segments(node) {
     return Array.prototype.slice.call(node.querySelectorAll('.flag-segment'));
 }
 function update(node, elapsed_time) {
-    node.ripples = node.ripples.map(function (ripple) { ripple.life -= elapsed_time; return ripple; }).filter(function (ripple) { return ripple.life > 0; });
+    node.ripples = node.ripples.map(function (ripple) { ripple.life -= elapsed_time; return ripple; });
     var ripple_map = generate_ripple_map(node.ripple_map, node.ripples, elapsed_time);
     node.ripple_map = ripple_map;
     var current_rotation = 0;
@@ -173,34 +173,36 @@ function update(node, elapsed_time) {
         else {
             lighting.className = 'flag-segment-overlay flag-segment-base';
         }
-        lighting.setAttribute('style', 'opacity: ' + Math.abs(0.4 * (rotation)));
+        lighting.setAttribute('style', 'opacity: ' + Math.abs(0.3 * (rotation)));
     }
 }
 function generate_ripple_map(ripple_map, ripples, elapsed_time) {
     var time_mod = elapsed_time === 0 ? 0 : 1 / elapsed_time;
     ripples.map(function (ripple) {
-        var max = 4;
-        var step = max / ripple.width;
         var completeness = 1 - ((1 / ripple.start_life) * ripple.life);
         for (var i = 0; i < ripple_map.length; i++) {
             var distance = Math.abs(ripple.position - i);
             if (distance <= ripple.width) {
-                ripple_map[i] = (2 - easeInOutQuad((1 / ripple.width) * distance)) * completeness;
+                ripple_map[i] += (ease((1 / ripple.width) * (ripple.width - distance)) * 4) * time_mod;
             }
         }
         ripple.position = (ripple_map.length * completeness).toFixed(0);
+        if (ripple.position > ripple_map.length + ripple.width) {
+            ripple.position = 0;
+            ripple.life = ripple.start_life;
+        }
     });
     ripple_map = ripple_map.map(function (point) {
         if (point > 0)
-            point -= time_mod * 0.5;
+            point -= time_mod * 2;
         if (point < 0)
-            point += time_mod * 0.5;
+            point += time_mod * 2;
         return point;
     });
     return ripple_map;
 }
-function easeInOutQuad(t) {
-    return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+function ease(t) {
+    return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
 }
 function animate(nodes, time) {
     var last_update = Date.now();

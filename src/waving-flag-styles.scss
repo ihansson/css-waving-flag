@@ -9,6 +9,7 @@
         transform-style: preserve-3d;
         transform-origin: top left;
     }
+	box-shadow: 0 0 15px rgba(0,0,0,0.25);
 }
 
 .flag-segment-wrapper,
@@ -29,7 +30,8 @@
 		position: absolute;
 		height: 100%;
 		width: calc(100% + 1px);
-		background: red;
+		background-image: url("data:image/svg+xml;BASE64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNjAwJyBoZWlnaHQ9JzEwMDAnIHZpZXdCb3g9JzAgMCAxNiAxMCc+PHJlY3Qgd2lkdGg9JzE2JyBoZWlnaHQ9JzEwJyBmaWxsPScjMDA2YWE3Jy8+PHJlY3Qgd2lkdGg9JzInIGhlaWdodD0nMTAnIHg9JzUnIGZpbGw9JyNmZWNjMDAnLz48cmVjdCB3aWR0aD0nMTYnIGhlaWdodD0nMicgeT0nNCcgZmlsbD0nI2ZlY2MwMCcvPjwvc3ZnPg==");
+		background-size: cover;
 	}
 }
 
