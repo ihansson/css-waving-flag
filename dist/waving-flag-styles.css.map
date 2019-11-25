@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"dist/waving-flag-styles.css","sourcesContent":[],"sourceRoot":""}
+{"version":3,"sources":["webpack://waving-flag/./src/waving-flag-styles.scss"],"names":[],"mappings":"AAAA,MAAM,kBAAkB,oCAAoC,kBAAkB,YAAY,MAAM,cAAc,WAAW,UAAU,eAAe,oCAAoC","file":"dist/waving-flag-styles.css","sourcesContent":[".flag{position:relative}.flag-segment-wrapper,.flag-segment{position:absolute;height:100%;top:0}.flag-segment{width:100%;left:100%;background:red}.flag-segment-wrapper>.flag-segment{left:0}\n"],"sourceRoot":""}

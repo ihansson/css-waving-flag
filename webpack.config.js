@@ -80,6 +80,7 @@ module.exports = {
   resolve: {
     alias:{
       Helpers: path.resolve(__dirname, 'src/helpers/'),
+      Interfaces: path.resolve(__dirname, 'src/interfaces/'),
     },
     extensions: [ '.tsx', '.ts', '.js' ]
   },

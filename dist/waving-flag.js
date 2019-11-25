@@ -99,13 +99,15 @@ function extract_settings(str) {
         return settings;
     str.split(';').forEach(function (setting) {
         setting = setting;
-        var arr = setting.trim().split(':');
+        var arr = setting.trim().split(/:(.+)/);
         if (!arr[0])
             return;
         var key = arr[0].trim();
         var value = arr[1] ? arr[1].trim() : true;
         if (['segments'].indexOf(key) !== -1)
             value = parseInt(value);
+        if (['proportions'].indexOf(key) !== -1)
+            value = value.split(':').map(function (_value) { return parseInt(_value); });
         settings[key] = arr[1] ? value : true;
     });
     return settings;
@@ -115,13 +117,34 @@ function extract_settings(str) {
 
 
 function load(node) {
-    var settings = extract_settings(node.getAttribute("flag"));
+    // Extract settings from flag property
+    var settings = extract_settings(node.getAttribute('flag'));
+    // Set root attributes
+    node.className = 'flag';
+    node.setAttribute("style", "padding-bottom: " + ((settings.proportions[1] / settings.proportions[0]) * 100) + "%;");
+    // Create segments
     var segments = create_segments(settings);
+    node.appendChild(segments);
 }
 function create_segments(settings) {
+    // Create wrapping el
     var wrapper = document.createElement('div');
+    wrapper.className = 'flag-segment-wrapper';
+    wrapper.setAttribute("style", "width: " + (100 / settings.segments) + "%");
+    // Create each segment nested inside the previous
+    var previous_segment = wrapper;
+    var segment;
+    // @todo MAKE THIS SMART
+    var ripple_map = [0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5, 1];
     for (var i = 0; i < settings.segments; i++) {
-        console.log(i);
+        // Build segment element
+        segment = document.createElement('div');
+        segment.className = 'flag-segment';
+        // @todo MOVE THIS TO OTHER FUNC
+        // @todo MOVE THIS TO OTHER FUNC
+        // Append to previous segment and set current to previous
+        previous_segment.appendChild(segment);
+        previous_segment = segment;
     }
     return wrapper;
 }
