@@ -87,18 +87,42 @@ window["waving-flag"] =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+// CONCATENATED MODULE: ./src/helpers/extract_settings.ts
+function extract_settings(str) {
+    var settings = {};
+    if (!str)
+        return settings;
+    str.split(';').forEach(function (setting) {
+        setting = setting;
+        var arr = setting.trim().split(':');
+        if (!arr[0])
+            return;
+        var key = arr[0].trim();
+        var value = arr[1] ? arr[1].trim() : true;
+        if (['segments'].indexOf(key) !== -1)
+            value = parseInt(value);
+        settings[key] = arr[1] ? value : true;
+    });
+    return settings;
+}
+
+// CONCATENATED MODULE: ./src/waving-flag.ts
 
 function load(node) {
     console.log(node);
+    console.log(extract_settings(node.getAttribute('flag')));
 }
-function init() {
-    document.querySelectorAll('[flag]').forEach(function (node) {
-        load(node);
-    });
+function init(selector) {
+    var nodes = Array.prototype.slice.call([document.querySelectorAll(selector)]);
+    nodes.map(function (node) { return load(node); });
+    return nodes;
 }
-init();
-module.exports = {};
+init('[flag]');
 
 
 /***/ })

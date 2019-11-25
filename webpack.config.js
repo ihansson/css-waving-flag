@@ -71,14 +71,17 @@ module.exports = {
         ],
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
     ]
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js' ],
+    alias:{
+      Helpers: path.resolve(__dirname, 'src/helpers/'),
+    },
+    extensions: [ '.tsx', '.ts', '.js' ]
   },
   plugins: [
     new FixStyleOnlyEntriesPlugin(),
