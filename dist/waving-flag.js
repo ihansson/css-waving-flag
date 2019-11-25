@@ -125,6 +125,9 @@ function load(node) {
     // Create segments
     var segments = create_segments(settings);
     node.appendChild(segments);
+    node.segments = cache_segments(node);
+    node.ripple_map = [0, 0.4, 0.9, 1.6, 2.35, 2.4, 2, 1.2, 0.5, -0.1, -0.5, -0.3, -0.9, -2, -2.1, -1.5, -0.7, -0.2, 0];
+    update(node);
 }
 function create_segments(settings) {
     // Create wrapping el
@@ -133,27 +136,62 @@ function create_segments(settings) {
     wrapper.setAttribute("style", "width: " + (100 / settings.segments) + "%");
     // Create each segment nested inside the previous
     var previous_segment = wrapper;
-    var segment;
-    // @todo MAKE THIS SMART
-    var ripple_map = [0, 0.5, 1, 0.5, 0, -0.5, -1, -0.5, 0, 0.5, 1];
     for (var i = 0; i < settings.segments; i++) {
         // Build segment element
-        segment = document.createElement('div');
+        var segment = document.createElement('div');
         segment.className = 'flag-segment';
-        // @todo MOVE THIS TO OTHER FUNC
-        // @todo MOVE THIS TO OTHER FUNC
+        segment.appendChild(document.createElement('div')); // Lighting element 
         // Append to previous segment and set current to previous
         previous_segment.appendChild(segment);
         previous_segment = segment;
     }
     return wrapper;
 }
+function cache_segments(node) {
+    return Array.prototype.slice.call(node.querySelectorAll('.flag-segment'));
+}
+function update(node) {
+    var ripple_map = generate_ripple_map(node.ripple_map);
+    node.ripple_map = ripple_map;
+    var current_rotation = 0;
+    var previous_rotation = 0;
+    for (var i = 0; i < node.segments.length; i++) {
+        var segment = node.segments[i];
+        var lighting = segment.firstChild;
+        var rotation = ripple_map[i] - current_rotation;
+        var active_rotation = rotation - previous_rotation;
+        current_rotation += rotation;
+        previous_rotation = rotation;
+        segment.setAttribute('style', 'transform: rotateY(' + (active_rotation * -25) + 'deg);');
+        if (rotation > 0) {
+            lighting.className = 'flag-segment-overlay flag-segment-light';
+        }
+        else if (rotation < 0) {
+            lighting.className = 'flag-segment-overlay flag-segment-dark';
+        }
+        else {
+            lighting.className = 'flag-segment-overlay flag-segment-base';
+        }
+        lighting.setAttribute('style', 'opacity: ' + Math.abs(0.4 * (rotation)));
+    }
+}
+function generate_ripple_map(ripple_map) {
+    var last = ripple_map.pop();
+    ripple_map.unshift(last);
+    return ripple_map;
+}
+function animate(nodes) {
+    nodes.map(function (node) { return update(node); });
+    window.requestAnimationFrame(function () {
+        animate(nodes);
+    });
+}
 function init(selector) {
     var nodes = Array.prototype.slice.call(document.querySelectorAll(selector));
     nodes.map(function (node) { return load(node); });
     return nodes;
 }
-init("[flag]");
+animate(init("[flag]"));
 
 
 /***/ })

@@ -1,20 +1,52 @@
+// Wrappers
+
 .flag {
-	position: relative;
+    perspective: 400px; 
+    position: relative;
+
+    * {
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        transform-origin: top left;
+    }
 }
 
 .flag-segment-wrapper,
-.flag-segment {
+.flag-segment,
+.flag-segment-overlay {
 	position: absolute;
 	height: 100%;
 	top: 0;
 }
 
+// Segments
+
 .flag-segment {
 	width: 100%;
 	left: 100%;
-	background: red;
+	&:before {
+		content: '';
+		position: absolute;
+		height: 100%;
+		width: calc(100% + 1px);
+		background: red;
+	}
 }
 
 .flag-segment-wrapper > .flag-segment {
 	left: 0;
+}
+
+// Overlay lights and shadows
+
+.flag-segment-overlay {
+	width: 100%;
+}
+
+.flag-segment-light {
+	background: rgba(255,255,255,0.5);
+}
+
+.flag-segment-dark {
+	background: rgba(0,0,0,0.5);
 }
