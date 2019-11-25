@@ -113,16 +113,24 @@ function extract_settings(str) {
 
 // CONCATENATED MODULE: ./src/waving-flag.ts
 
+
 function load(node) {
-    console.log(node);
-    console.log(extract_settings(node.getAttribute('flag')));
+    var settings = extract_settings(node.getAttribute("flag"));
+    var segments = create_segments(settings);
+}
+function create_segments(settings) {
+    var wrapper = document.createElement('div');
+    for (var i = 0; i < settings.segments; i++) {
+        console.log(i);
+    }
+    return wrapper;
 }
 function init(selector) {
-    var nodes = Array.prototype.slice.call([document.querySelectorAll(selector)]);
+    var nodes = Array.prototype.slice.call(document.querySelectorAll(selector));
     nodes.map(function (node) { return load(node); });
     return nodes;
 }
-init('[flag]');
+init("[flag]");
 
 
 /***/ })
