@@ -19,8 +19,7 @@ function load(node: Flag) {
 	node.appendChild(segments);
 
 	node.segments = cache_segments(node);
-	node.ripple_map = new Array(settings.segments).fill(0);
-	node.ripples = [{position: 0, width: 12, start_life: 500, life: 500}];
+	node.ripple_map = generate_ripple_map(settings);
 
 }
 
@@ -54,9 +53,7 @@ function cache_segments(node: Flag): Array<Element> {
 
 function update(node: Flag, elapsed_time: number){
 
-	node.ripples = node.ripples.map(ripple => { ripple.life -= elapsed_time; return ripple })
-
-	const ripple_map: Array<number> = generate_ripple_map(node.ripple_map, node.ripples, elapsed_time);
+	const ripple_map: Array<number> = shift_ripplemap(node.ripple_map, elapsed_time);
 	node.ripple_map = ripple_map;
 
 	let current_rotation: number = 0;
@@ -88,44 +85,46 @@ function update(node: Flag, elapsed_time: number){
 
 }
 
-function generate_ripple_map(ripple_map: Array<number>, ripples: Array<any>, elapsed_time: number): Array<number>{
+function generate_ripple_map(settings: Settings): Array<number> {
 
-	let time_mod = elapsed_time === 0 ? 0 : 1 / elapsed_time;
+	const arr: Array<number> = [];
+	const frequency: number = settings.segments / 4;
 
-	ripples.map(ripple => {
-		const completeness: number = 1 - ((1 / ripple.start_life) * ripple.life);
-		for(let i: number = 0; i < ripple_map.length; i++){
-			let distance = Math.abs(ripple.position - i);
-			if(distance <= ripple.width){
-				ripple_map[i] += (ease((1 / ripple.width) * (ripple.width - distance)) * 4) * time_mod;
-			}
+	let up = true;
+	for(let i: number = 1; i <= settings.segments; i++){
+		let dist = i % frequency;
+		if(dist === 0){
+			up = !up;
 		}
-		ripple.position = (ripple_map.length * completeness).toFixed(0);
-		if(ripple.position > ripple_map.length + ripple.width){
-			ripple.position = 0;
-			ripple.life = ripple.start_life;
+		if(!up){
+			dist = frequency - dist;
 		}
-	})
+		dist = (1 / frequency) * dist;
+		arr.push(
+			(ease(dist) * 3) - 1.5
+		);
+	}
 
-	ripple_map = ripple_map.map(point => {
-		if(point > 0) point -= time_mod * 2;
-		if(point < 0) point += time_mod * 2;
-		return point;
-	})
+	return arr;
+}
 
+function shift_ripplemap(ripple_map: Array<number>, elapsed_time: number): Array<number>{
+	ripple_map.unshift(ripple_map.pop())
 	return ripple_map;
 }
 
 function ease(t: number): number { 
-	return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t
+	return t<.5 ? 2*t*t : -1+(4-2*t)*t
 }
 
 function animate(nodes: Array<Flag>, time: number){
 	const last_update = Date.now();
 	nodes.map(node => update(node, time));
-	window.requestAnimationFrame(function(){
-		animate(nodes, Date.now() - last_update);
-	});
+	window.setTimeout(function(){
+		window.requestAnimationFrame(function(){
+				animate(nodes, Date.now() - last_update);
+		});
+	}, 25);
 }
 
 function init(selector: string): Array<Flag> {

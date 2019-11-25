@@ -9,7 +9,6 @@
         transform-style: preserve-3d;
         transform-origin: top left;
     }
-	box-shadow: 0 0 15px rgba(0,0,0,0.25);
 }
 
 .flag-segment-wrapper,
@@ -30,8 +29,7 @@
 		position: absolute;
 		height: 100%;
 		width: calc(100% + 1px);
-		background-image: url("data:image/svg+xml;BASE64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNjAwJyBoZWlnaHQ9JzEwMDAnIHZpZXdCb3g9JzAgMCAxNiAxMCc+PHJlY3Qgd2lkdGg9JzE2JyBoZWlnaHQ9JzEwJyBmaWxsPScjMDA2YWE3Jy8+PHJlY3Qgd2lkdGg9JzInIGhlaWdodD0nMTAnIHg9JzUnIGZpbGw9JyNmZWNjMDAnLz48cmVjdCB3aWR0aD0nMTYnIGhlaWdodD0nMicgeT0nNCcgZmlsbD0nI2ZlY2MwMCcvPjwvc3ZnPg==");
-		background-size: cover;
+		background: #004B87;
 	}
 }
 
@@ -46,9 +44,22 @@
 }
 
 .flag-segment-light {
-	background: rgba(255,255,255,0.5);
+	background: rgba(255,255,255,0.3);
 }
 
 .flag-segment-dark {
-	background: rgba(0,0,0,0.5);
+	background: rgba(0,0,0,0.3);
+}
+
+// Pole
+
+.pole {
+	background: linear-gradient(90deg, rgba(255,255,255,1) 60%, rgba(225,225,225,1) 100%);
+	box-shadow: 0 0 5px rgba(0,0,0,0.25);
+	height: 600px;
+	width: 10px;
+	position: absolute;
+	top: 15px;
+	left: -5px;
+	border-radius: 5px;
 }
