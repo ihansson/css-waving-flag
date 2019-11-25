@@ -19,9 +19,8 @@ function load(node: Flag) {
 	node.appendChild(segments);
 
 	node.segments = cache_segments(node);
-	node.ripple_map = [0,0.4,0.9,1.6,2.35,2.4,2,1.2,0.5,-0.1,-0.5,-0.3,-0.9,-2,-2.1,-1.5,-0.7,-0.2,0];
-
-	update(node)
+	node.ripple_map = new Array(settings.segments).fill(0);
+	node.ripples = [{position: 0, width: 3, start_life: 1000, life: 1000}];
 
 }
 
@@ -53,9 +52,11 @@ function cache_segments(node: Flag): Array<Element> {
 	return Array.prototype.slice.call(node.querySelectorAll('.flag-segment')); 
 }
 
-function update(node: Flag){
+function update(node: Flag, elapsed_time: number){
 
-	const ripple_map: Array<number> = generate_ripple_map(node.ripple_map);
+	node.ripples = node.ripples.map(ripple => { ripple.life -= elapsed_time; return ripple }).filter(ripple => ripple.life > 0)
+
+	const ripple_map: Array<number> = generate_ripple_map(node.ripple_map, node.ripples, elapsed_time);
 	node.ripple_map = ripple_map;
 
 	let current_rotation: number = 0;
@@ -87,16 +88,41 @@ function update(node: Flag){
 
 }
 
-function generate_ripple_map(ripple_map: Array<number>): Array<number>{
-	const last = ripple_map.pop();
-	ripple_map.unshift(last);
+function generate_ripple_map(ripple_map: Array<number>, ripples: Array<any>, elapsed_time: number): Array<number>{
+
+	let time_mod = elapsed_time === 0 ? 0 : 1 / elapsed_time;
+
+	ripples.map(ripple => {
+		const max: number = 4;
+		const step: number = max / ripple.width;
+		const completeness: number = 1 - ((1 / ripple.start_life) * ripple.life);
+		for(let i: number = 0; i < ripple_map.length; i++){
+			let distance = Math.abs(ripple.position - i);
+			if(distance <= ripple.width){
+				ripple_map[i] = (2 - easeInOutQuad((1 / ripple.width) * distance)) * completeness;
+			}
+		}
+		ripple.position = (ripple_map.length * completeness).toFixed(0);
+	})
+
+	ripple_map = ripple_map.map(point => {
+		if(point > 0) point -= time_mod * 0.5;
+		if(point < 0) point += time_mod * 0.5;
+		return point;
+	})
+
 	return ripple_map;
 }
 
-function animate(nodes: Array<Flag>){
-	nodes.map(node => update(node));
+function easeInOutQuad(t: number): number { 
+	return t<.5 ? 2*t*t : -1+(4-2*t)*t 
+}
+
+function animate(nodes: Array<Flag>, time: number){
+	const last_update = Date.now();
+	nodes.map(node => update(node, time));
 	window.requestAnimationFrame(function(){
-		animate(nodes);
+		animate(nodes, Date.now() - last_update);
 	});
 }
 
@@ -106,4 +132,4 @@ function init(selector: string): Array<Flag> {
 	return nodes;
 }
 
-animate(init("[flag]"));
+animate(init("[flag]"), 0);

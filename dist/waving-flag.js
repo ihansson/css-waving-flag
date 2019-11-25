@@ -126,8 +126,8 @@ function load(node) {
     var segments = create_segments(settings);
     node.appendChild(segments);
     node.segments = cache_segments(node);
-    node.ripple_map = [0, 0.4, 0.9, 1.6, 2.35, 2.4, 2, 1.2, 0.5, -0.1, -0.5, -0.3, -0.9, -2, -2.1, -1.5, -0.7, -0.2, 0];
-    update(node);
+    node.ripple_map = new Array(settings.segments).fill(0);
+    node.ripples = [{ position: 0, width: 3, start_life: 1000, life: 1000 }];
 }
 function create_segments(settings) {
     // Create wrapping el
@@ -150,8 +150,9 @@ function create_segments(settings) {
 function cache_segments(node) {
     return Array.prototype.slice.call(node.querySelectorAll('.flag-segment'));
 }
-function update(node) {
-    var ripple_map = generate_ripple_map(node.ripple_map);
+function update(node, elapsed_time) {
+    node.ripples = node.ripples.map(function (ripple) { ripple.life -= elapsed_time; return ripple; }).filter(function (ripple) { return ripple.life > 0; });
+    var ripple_map = generate_ripple_map(node.ripple_map, node.ripples, elapsed_time);
     node.ripple_map = ripple_map;
     var current_rotation = 0;
     var previous_rotation = 0;
@@ -175,15 +176,37 @@ function update(node) {
         lighting.setAttribute('style', 'opacity: ' + Math.abs(0.4 * (rotation)));
     }
 }
-function generate_ripple_map(ripple_map) {
-    var last = ripple_map.pop();
-    ripple_map.unshift(last);
+function generate_ripple_map(ripple_map, ripples, elapsed_time) {
+    var time_mod = elapsed_time === 0 ? 0 : 1 / elapsed_time;
+    ripples.map(function (ripple) {
+        var max = 4;
+        var step = max / ripple.width;
+        var completeness = 1 - ((1 / ripple.start_life) * ripple.life);
+        for (var i = 0; i < ripple_map.length; i++) {
+            var distance = Math.abs(ripple.position - i);
+            if (distance <= ripple.width) {
+                ripple_map[i] = (2 - easeInOutQuad((1 / ripple.width) * distance)) * completeness;
+            }
+        }
+        ripple.position = (ripple_map.length * completeness).toFixed(0);
+    });
+    ripple_map = ripple_map.map(function (point) {
+        if (point > 0)
+            point -= time_mod * 0.5;
+        if (point < 0)
+            point += time_mod * 0.5;
+        return point;
+    });
     return ripple_map;
 }
-function animate(nodes) {
-    nodes.map(function (node) { return update(node); });
+function easeInOutQuad(t) {
+    return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+function animate(nodes, time) {
+    var last_update = Date.now();
+    nodes.map(function (node) { return update(node, time); });
     window.requestAnimationFrame(function () {
-        animate(nodes);
+        animate(nodes, Date.now() - last_update);
     });
 }
 function init(selector) {
@@ -191,7 +214,7 @@ function init(selector) {
     nodes.map(function (node) { return load(node); });
     return nodes;
 }
-animate(init("[flag]"));
+animate(init("[flag]"), 0);
 
 
 /***/ })
