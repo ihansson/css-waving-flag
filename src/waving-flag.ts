@@ -70,7 +70,7 @@ function update(node: Flag, elapsed_time: number){
 		current_rotation += rotation;
 		previous_rotation = rotation;
 
-		segment.setAttribute('style', 'transform: rotateY('+(active_rotation * -25)+'deg);');
+		segment.setAttribute('style', 'transform: rotateY('+(active_rotation * -25)+'deg); background-size-x:'+((node.segments.length / 100) * i)+'%');
 
 		if(rotation > 0){
 			lighting.className = 'flag-segment-overlay flag-segment-light';
